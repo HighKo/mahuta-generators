@@ -17,7 +17,13 @@ Gem::Specification.new do |spec|
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
-
+  
+  # spec.add_dependency 'cite'
+  spec.add_dependency 'diff-lcs', '~> 1.3'
+  spec.add_dependency 'diffy', '~> 3.2'
+  spec.add_dependency 'tty-prompt'
+  spec.add_dependency 'pastel'
+  
   spec.add_development_dependency 'bundler', '~> 1.15'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
