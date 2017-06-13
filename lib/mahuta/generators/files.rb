@@ -13,14 +13,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module Mahuta
-  module Generators
-    require 'mahuta/generators/files'
-    require 'mahuta/generators/template'
-    require 'mahuta/generators/es6'
-    require 'mahuta/generators/java'
-    require 'mahuta/generators/ruby'
-    require 'mahuta/generators/version'
+require 'diff/lcs'
+require 'diffy'
+require 'pastel'
+require 'tty-prompt'
+
+module Mahuta::Generators
+  
+  module Files
+    
+    def initialize(options = {})
+      super
+      @target = options[:target] || raise("Files generator needs to know a target")
+    end
+    
+    attr_reader :target
+    
+    def update_file(name, content)
+      if name.exist?
+        diff = Diffy::Diff.new(name.read, content)
+        if diff.empty?
+          puts "Files are identical - skip"
+        else
+          puts "Files have to be updated"
+        end
+      end
+      name.parent.mkpath
+      name.write(content)
+    end
     
   end
+  
 end

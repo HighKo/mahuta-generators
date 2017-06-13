@@ -13,14 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module Mahuta
-  module Generators
-    require 'mahuta/generators/files'
-    require 'mahuta/generators/template'
-    require 'mahuta/generators/es6'
-    require 'mahuta/generators/java'
-    require 'mahuta/generators/ruby'
-    require 'mahuta/generators/version'
+module Mahuta::Generators
+  
+  module Ruby
+    
+    
     
   end
+  
 end
