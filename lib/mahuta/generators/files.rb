@@ -22,6 +22,8 @@ module Mahuta::Generators
   
   module Files
     
+    P = Pastel.new
+    
     def initialize(options = {})
       super
       @target = options[:target] || raise("Files generator needs to know a target")
@@ -30,13 +32,16 @@ module Mahuta::Generators
     attr_reader :target
     
     def update_file(name, content)
+      puts "Generating file #{name.relative_path_from(@target)}..."
       if name.exist?
         diff = Diffy::Diff.new(name.read, content)
-        if diff.empty?
-          puts "Files are identical - skip"
+        if diff.to_s.empty?
+          puts P.green("File is identical - skip")
         else
-          puts "Files have to be updated"
+          puts P.bold.yellow("File has to be updated")
         end
+      else
+        puts P.bold.green("Creating")
       end
       name.parent.mkpath
       name.write(content)
