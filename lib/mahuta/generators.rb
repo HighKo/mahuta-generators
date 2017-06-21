@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'active_support'
+require 'active_support/core_ext'
+
 module Mahuta
   module Generators
     require 'mahuta/generators/files'
