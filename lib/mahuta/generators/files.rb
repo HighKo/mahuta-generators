@@ -32,16 +32,16 @@ module Mahuta::Generators
     attr_reader :target
     
     def update_file(name, content)
-      puts "Generating file #{name.relative_path_from(@target)}..."
+      print "Generating file #{name.relative_path_from(@target)}... "
       if name.exist?
         diff = Diffy::Diff.new(name.read, content)
         if diff.to_s.empty?
-          puts P.green("File is identical - skip")
+          puts P.bright_yellow("skip")
         else
-          puts P.bold.yellow("File has to be updated")
+          puts P.bold.yellow("update")
         end
       else
-        puts P.bold.green("Creating")
+        puts P.bold.green("create")
       end
       name.parent.mkpath
       name.write(content)
