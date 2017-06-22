@@ -57,7 +57,8 @@ module Mahuta::Generators
     end
     
     def path_for_type(node)
-      target + [*node.namespace, *node.namespace_postfix, "#{java_type_name(node[:name])}.java"].collect(&:to_s).join('/')
+      ns = node.namespace.collect {|nc| nc.to_s.camelize(:lower) }
+      target + [*ns, "#{java_type_name(node[:name])}.java"].collect(&:to_s).join('/')
     end
     
   end
