@@ -44,6 +44,10 @@ module Mahuta::Generators
       end
     end
     
+    def java_namespace(node)
+      node.namespace.collect {|nc| nc.to_s.camelize(:lower) }.join('.')
+    end
+    
     def java_variable_name(name)
       name.to_s.camelize(:lower)
     end
