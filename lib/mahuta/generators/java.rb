@@ -14,9 +14,9 @@
 # limitations under the License.
 
 module Mahuta::Generators
-  
+
   module Java
-    
+
     def java_type(node)
       type = node[:type]
       case node[:many]
@@ -28,14 +28,14 @@ module Mahuta::Generators
         "List<#{java_type_name(type)}>"
       end
     end
-    
+
     def java_type_name(type)
       case type
       when :int, :integer
         'Integer'
       when :float
         'Float'
-      when :string, :email, :phone_number
+      when :string, :email, :phone_number, :guid
         'String'
       when :url
         'URL'
