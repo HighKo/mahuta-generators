@@ -14,9 +14,9 @@
 # limitations under the License.
 
 module Mahuta::Generators
-  
+
   module Java
-    
+
     def java_type(node)
       type = node[:type]
       case node[:many]
@@ -28,14 +28,14 @@ module Mahuta::Generators
         "List<#{java_type_name(type)}>"
       end
     end
-    
+
     def java_type_name(type)
       case type
       when :int, :integer
         'Integer'
       when :float
         'Float'
-      when :string, :email, :phone_number
+      when :string, :email, :phone_number, :guid
         'String'
       when :url
         'URL'
@@ -43,24 +43,28 @@ module Mahuta::Generators
         type.to_s.camelize(:upper)
       end
     end
-    
+
     def java_namespace(node)
       node.namespace.collect {|nc| nc.to_s.camelize(:lower) }.join('.')
     end
-    
+
     def java_variable_name(name)
       name.to_s.camelize(:lower)
     end
-    
-    def java_imports(type)
-      
+
+    def java_constant_name(name)
+      name.to_s.upcase
     end
-    
+
+    def java_imports(type)
+
+    end
+
     def path_for_type(node)
       ns = node.namespace.collect {|nc| nc.to_s.camelize(:lower) }
       target + [*ns, "#{java_type_name(node[:name])}.java"].collect(&:to_s).join('/')
     end
-    
+
   end
-  
+
 end
