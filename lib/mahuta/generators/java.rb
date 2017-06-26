@@ -43,24 +43,28 @@ module Mahuta::Generators
         type.to_s.camelize(:upper)
       end
     end
-    
+
     def java_namespace(node)
       node.namespace.collect {|nc| nc.to_s.camelize(:lower) }.join('.')
     end
-    
+
     def java_variable_name(name)
       name.to_s.camelize(:lower)
     end
-    
-    def java_imports(type)
-      
+
+    def java_constant_name(name)
+      name.to_s.upcase
     end
-    
+
+    def java_imports(type)
+
+    end
+
     def path_for_type(node)
       ns = node.namespace.collect {|nc| nc.to_s.camelize(:lower) }
       target + [*ns, "#{java_type_name(node[:name])}.java"].collect(&:to_s).join('/')
     end
-    
+
   end
-  
+
 end
