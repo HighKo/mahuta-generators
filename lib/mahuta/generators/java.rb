@@ -46,8 +46,12 @@ module Mahuta::Generators
       when :binary
         'byte[]'
       else
-        type.to_s.camelize(:upper)
+        java_class_name(type)
       end
+    end
+
+    def java_class_name(type)
+        type.to_s.camelize(:upper)
     end
 
     def java_namespace(node)
