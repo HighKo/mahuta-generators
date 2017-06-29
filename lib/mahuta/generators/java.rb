@@ -66,7 +66,10 @@ module Mahuta::Generators
       name.to_s.upcase
     end
 
-    def java_imports(type)
+    def java_import(node)
+      type_node = node.root.descendants {|descendant| descendant.name == node.type}.first
+      java_namespace(type_node) + '.' + java_class_name(type_node.name)
+    end
 
     def namespace_with_postfix(node) 
       if node.respond_to? :namespace_postfix
