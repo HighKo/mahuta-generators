@@ -35,10 +35,16 @@ module Mahuta::Generators
         'Integer'
       when :float
         'Float'
-      when :string, :email, :phone_number, :guid
+      when :long_integer
+        'Long'
+      when :string, :email, :phone_number
         'String'
       when :url
         'URL'
+      when :date
+        'org.joda.time.DateTime'
+      when :binary
+        'byte[]'
       else
         type.to_s.camelize(:upper)
       end
