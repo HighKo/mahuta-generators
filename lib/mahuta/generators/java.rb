@@ -31,11 +31,13 @@ module Mahuta::Generators
 
     def java_type_name(type)
       case type
+      when :bool, :boolean
+        'Boolean'
       when :int, :integer
         'Integer'
       when :float
         'Float'
-      when :long_integer
+      when :long, :long_integer
         'Long'
       when :string, :email, :phone_number
         'String'
@@ -66,9 +68,41 @@ module Mahuta::Generators
       name.to_s.upcase
     end
 
+    def java_imports(node) 
+      node 
+        .children(:property)
+        .select {|prop|
+          if prop.respond_to? :is_standard? 
+            !prop.is_standard?
+          else 
+            false
+          end
+        }
+        .uniq {|prop| prop.type}
+        .collect {|prop| "import " + java_import(prop) + ";"}
+        .join "\n"
+    end
+
     def java_import(node)
       type_node = node.root.descendants {|descendant| descendant.name == node.type}.first
       java_namespace(type_node) + '.' + java_class_name(type_node.name)
+    end
+
+    def java_collection_imports(node) 
+      collection_properties =
+        node
+          .children(:property)
+          .select {|prop| prop[:many]} 
+
+      return nil if collection_properties.empty?
+      
+      if collection_properties.all? {|prop| prop[:many] == :ordered}
+        'import java.util.List;'
+      elsif collection_properties.any? {|prop| prop[:many] == :ordered}
+        "import java.util.List;\nimport java.util.Set;"
+      else
+        'import java.util.Set;'
+      end
     end
 
     def namespace_with_postfix(node) 
