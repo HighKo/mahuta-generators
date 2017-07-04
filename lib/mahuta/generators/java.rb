@@ -91,9 +91,15 @@ module Mahuta::Generators
             descendant.name == node.type 
           }
           .first
-          unless type_node.respond_to? :namespace 
-            raise "Can't infer namespace for #{node.node_type.to_s}:#{node.name.to_s} of type #{type_node.name.to_s} while generating #{node.parent.node_type.to_s}:#{node.parent.name.to_s}.\n Maybe you used a property name as type?"
-          end
+
+      unless type_node.respond_to? :namespace 
+        raise <<-EOF.strip_heredoc
+          Can't infer namespace for #{node.node_type.to_s}:#{node.name.to_s} of type #{type_node.name.to_s}
+          while generating #{node.parent.node_type.to_s}:#{node.parent.name.to_s}.
+          Maybe you used a property name as type?
+        EOF
+      end
+
       java_namespace(type_node) + '.' + java_class_name(type_node.name)
     end
 
