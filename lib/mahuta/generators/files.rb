@@ -26,7 +26,7 @@ module Mahuta::Generators
     
     def initialize(options = {})
       super
-      @target = options[:target] || raise("Files generator needs to know a target")
+      @target = options[:target] || raise("Files generator needs to know a target directory")
     end
     
     attr_reader :target
