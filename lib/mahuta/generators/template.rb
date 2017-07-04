@@ -19,9 +19,10 @@ module Mahuta::Generators
   
   module Template
     
-    def render(name, node, locals = {})
+    def render(name, node = nil, locals = {})
       t = Cite.file(template_root + "#{name}.cite")
-      t.render(self, locals.merge(node: node))
+      locals = locals.merge(node: node) if node
+      t.render(self, locals)
     end
     
     def render_all(name, nodes, locals = {})
