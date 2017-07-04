@@ -88,6 +88,23 @@ module Mahuta::Generators
       java_namespace(type_node) + '.' + java_class_name(type_node.name)
     end
 
+    def java_collection_imports(node) 
+      collection_properties =
+        node
+          .children(:property)
+          .select {|prop| prop[:many]} 
+
+      return nil if collection_properties.empty?
+      
+      if collection_properties.all? {|prop| prop[:many] == :ordered}
+        'import java.util.List;'
+      elsif collection_properties.any? {|prop| prop[:many] == :ordered}
+        "import java.util.List;\nimport java.util.Set;"
+      else
+        'import java.util.Set;'
+      end
+    end
+
     def namespace_with_postfix(node) 
       if node.respond_to? :namespace_postfix
         node.namespace + node.namespace_postfix
