@@ -35,17 +35,27 @@ module Mahuta::Generators
         'Integer'
       when :float
         'Float'
-      when :string, :email, :phone_number, :guid
+      when :long_integer
+        'Long'
+      when :string, :email, :phone_number
         'String'
       when :url
         'URL'
+      when :date
+        'org.joda.time.DateTime'
+      when :binary
+        'byte[]'
       else
-        type.to_s.camelize(:upper)
+        java_class_name(type)
       end
     end
 
+    def java_class_name(type)
+        type.to_s.camelize(:upper)
+    end
+
     def java_namespace(node)
-      node.namespace.collect {|nc| nc.to_s.camelize(:lower) }.join('.')
+      namespace_with_postfix(node).collect {|nc| nc.to_s.camelize(:lower) }.join('.')
     end
 
     def java_variable_name(name)
@@ -56,12 +66,23 @@ module Mahuta::Generators
       name.to_s.upcase
     end
 
-    def java_imports(type)
+    def java_import(node)
+      type_node = node.root.descendants {|descendant| descendant.name == node.type}.first
+      java_namespace(type_node) + '.' + java_class_name(type_node.name)
+    end
 
+    def namespace_with_postfix(node) 
+      if node.respond_to? :namespace_postfix
+        node.namespace + node.namespace_postfix
+      else
+        node.namespace
+      end
     end
 
     def path_for_type(node)
-      ns = node.namespace.collect {|nc| nc.to_s.camelize(:lower) }
+      namespace = namespace_with_postfix(node)
+
+      ns = namespace.collect {|nc| nc.to_s.camelize(:lower) }
       target + [*ns, "#{java_type_name(node[:name])}.java"].collect(&:to_s).join('/')
     end
 
