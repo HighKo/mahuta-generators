@@ -37,7 +37,7 @@ module Mahuta::Generators
         'Integer'
       when :float
         'Float'
-      when :long_integer
+      when :long, :long_integer
         'Long'
       when :string, :email, :phone_number
         'String'
