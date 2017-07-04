@@ -31,6 +31,8 @@ module Mahuta::Generators
 
     def java_type_name(type)
       case type
+      when :bool, :boolean
+        'Boolean'
       when :int, :integer
         'Integer'
       when :float
