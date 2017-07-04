@@ -68,6 +68,21 @@ module Mahuta::Generators
       name.to_s.upcase
     end
 
+    def java_imports(node) 
+      node 
+        .children(:property)
+        .select {|prop|
+          if prop.respond_to? :is_standard? 
+            !prop.is_standard?
+          else 
+            false
+          end
+        }
+        .uniq {|prop| prop.type}
+        .collect {|prop| "import " + java_import(prop) + ";"}
+        .join "\n"
+    end
+
     def java_import(node)
       type_node = node.root.descendants {|descendant| descendant.name == node.type}.first
       java_namespace(type_node) + '.' + java_class_name(type_node.name)
