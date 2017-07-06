@@ -57,7 +57,7 @@ module Mahuta::Generators
     end
 
     def java_namespace(node)
-      namespace_with_postfix(node).collect {|nc| nc.to_s.camelize(:lower) }.join('.')
+      node.namespace.collect {|nc| nc.to_s.camelize(:lower) }.join('.')
     end
 
     def java_variable_name(name)
@@ -120,18 +120,8 @@ module Mahuta::Generators
       end
     end
 
-    def namespace_with_postfix(node) 
-      if node.respond_to? :namespace_postfix
-        node.namespace + node.namespace_postfix
-      else
-        node.namespace
-      end
-    end
-
     def path_for_type(node)
-      namespace = namespace_with_postfix(node)
-
-      ns = namespace.collect {|nc| nc.to_s.camelize(:lower) }
+      ns = node.namespace.collect {|nc| nc.to_s.camelize(:lower) }
       target + [*ns, "#{java_type_name(node[:name])}.java"].collect(&:to_s).join('/')
     end
 
