@@ -56,8 +56,8 @@ module Mahuta::Generators
         type.to_s.camelize(:upper)
     end
 
-    def java_namespace(node)
-      node.namespace.collect {|nc| nc.to_s.camelize(:lower) }.join('.')
+    def java_namespace(node, *local)
+      [*node.namespace, *local].collect {|nc| nc.to_s.camelize(:lower) }.join('.')
     end
 
     def java_variable_name(name)
