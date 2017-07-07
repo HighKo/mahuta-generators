@@ -18,8 +18,10 @@ require 'active_support/core_ext'
 
 module Mahuta
   module Generators
+    require 'mahuta/generators/base'
     require 'mahuta/generators/files'
     require 'mahuta/generators/template'
+    require 'mahuta/generators/tree'
     require 'mahuta/generators/es6'
     require 'mahuta/generators/java'
     require 'mahuta/generators/ruby'
