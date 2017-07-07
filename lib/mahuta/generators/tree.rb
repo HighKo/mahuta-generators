@@ -30,8 +30,12 @@ module Mahuta::Generators
       @stack.last
     end
     
+    def child(node_type, attributes = {})
+      top.add_child(node_type, attributes)
+    end
+    
     def child!(node_type, attributes = {})
-      new_child = top.add_child(node_type, attributes)
+      new_child = child(node_type, attributes)
       stack.push new_child
       new_child
     end
