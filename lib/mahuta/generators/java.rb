@@ -124,7 +124,11 @@ module Mahuta::Generators
       ns = node.namespace.collect {|nc| nc.to_s.camelize(:lower) }
       target + [*ns, "#{java_type_name(node[:name])}.java"].collect(&:to_s).join('/')
     end
-
+    
+    def java_file_name(node)
+      "#{java_type_name(node[:name])}.java"
+    end
+    
   end
 
 end
