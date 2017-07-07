@@ -125,6 +125,10 @@ module Mahuta::Generators
       target + [*ns, "#{kotlin_type_name(node[:name])}.kt"].collect(&:to_s).join('/')
     end
 
+    def kotlin_file_name(node) 
+      "#{kotlin_type_name(node)}.kt"
+    end
+
   end
 
 end
