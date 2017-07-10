@@ -77,27 +77,14 @@ module Mahuta::Generators
       name.to_s.upcase
     end
 
-    def kotlin_imports(node) 
-      node 
-        .children(:property)
-        .select {|prop|
-          if prop.respond_to? :is_standard? 
-            !prop.is_standard?
-          else 
-            false
-          end
-        }
-        .uniq {|prop| prop.type}
-        .collect {|prop| "import " + kotlin_import(prop)}
-        .join "\n"
-    end
-
     def kotlin_import(node)
+      return nil if is_builtin? node.type 
+
       type_node =
         node
           .root
           .descendants {|descendant|
-            descendant.name == node.type 
+            descendant.name == node.type && descendant&.is_value_type? rescue false
           }
           .first
 
