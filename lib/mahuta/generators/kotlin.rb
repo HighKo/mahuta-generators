@@ -100,7 +100,7 @@ module Mahuta::Generators
     end
 
     def kotlin_file_name(node) 
-      "#{kotlin_type_name(node)}.kt"
+      "#{kotlin_type_name(node[:name])}.kt"
     end
 
   end
