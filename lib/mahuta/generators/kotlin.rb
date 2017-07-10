@@ -52,6 +52,15 @@ module Mahuta::Generators
       end
     end
 
+    def is_builtin?(type)
+      case type
+      when :bool, :boolean, :int, :integer, :float, :long, :long_integer, :string, :email, :phone_number, :url, :date, :binary
+        true
+      else
+        false
+      end
+    end
+
     def kotlin_class_name(type)
         type.to_s.camelize(:upper)
     end
