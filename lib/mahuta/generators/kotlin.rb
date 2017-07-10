@@ -65,8 +65,8 @@ module Mahuta::Generators
         type.to_s.camelize(:upper)
     end
 
-    def kotlin_namespace(node)
-      node.namespace.collect {|nc| nc.to_s.camelize(:lower) }.join('.')
+    def kotlin_namespace(node, *postfixes)
+      [ *node.namespace, *postfixes ].collect {|nc| nc.to_s.camelize(:lower) }.join('.')
     end
 
     def kotlin_variable_name(name)
