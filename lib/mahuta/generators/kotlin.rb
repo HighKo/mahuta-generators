@@ -99,28 +99,6 @@ module Mahuta::Generators
       kotlin_namespace(type_node) + '.' + kotlin_class_name(type_node.name)
     end
 
-    def kotlin_collection_imports(node) 
-      collection_properties =
-        node
-          .children(:property)
-          .select {|prop| prop[:many]} 
-
-      return nil if collection_properties.empty?
-      
-      if collection_properties.all? {|prop| prop[:many] == :ordered}
-        'import kotlin.colletions.List'
-      elsif collection_properties.any? {|prop| prop[:many] == :ordered}
-        "import kotlin.colletions.List\nimport kotlin.colletions.Set"
-      else
-        'import kotlin.colletions.Set'
-      end
-    end
-
-    def path_for_type(node)
-      ns = node.namespace.collect {|nc| nc.to_s.camelize(:lower) }
-      target + [*ns, "#{kotlin_type_name(node[:name])}.kt"].collect(&:to_s).join('/')
-    end
-
     def kotlin_file_name(node) 
       "#{kotlin_type_name(node)}.kt"
     end
