@@ -25,10 +25,8 @@ module Mahuta::Generators
       t.render(self, locals)
     end
     
-    def render_all(name, nodes, options = {})
-      options[:locals] ||= {}
-      options[:with_joint] ||= ''
-      nodes.collect {|n| render(name, n, options[:locals]) }.join options[:with_joint]
+    def render_all(name, nodes, locals = {})
+      nodes.collect {|n| render(name, n, locals) }.join
     end
     
   end
