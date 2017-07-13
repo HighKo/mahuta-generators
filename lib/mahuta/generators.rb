@@ -24,6 +24,7 @@ module Mahuta
     require 'mahuta/generators/tree'
     require 'mahuta/generators/es6'
     require 'mahuta/generators/java'
+    require 'mahuta/generators/kotlin'
     require 'mahuta/generators/ruby'
     require 'mahuta/generators/version'
     
