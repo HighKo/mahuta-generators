@@ -61,6 +61,15 @@ module Mahuta::Generators
       end
     end
 
+    def is_primitive?(type)
+      case type
+      when :bool, :boolean, :int, :integer, :float, :long, :long_integer, :string, :email, :phone_number 
+        true
+      else
+        false
+      end
+    end
+
     def kotlin_class_name(type)
         type.to_s.camelize(:upper)
     end
@@ -77,16 +86,62 @@ module Mahuta::Generators
       name.to_s.upcase
     end
 
-    def kotlin_import(node)
-      return nil if is_builtin? node.type 
+    def kotlin_serializer_function(node) 
+      if is_builtin? node.type 
+        'toString' 
+      else 
+        'toJson'
+      end
+    end
 
-      type_node =
+    def kotlin_json_adder_function(node)
+      if is_builtin? node.type 
+        'addProperty' 
+      else 
+        'add'
+      end
+    end
+
+    def kotlin_deserializer_function(node) 
+      if is_builtin? node.type 
+        'fromString' 
+      else 
+        'fromJson' 
+      end
+    end
+
+    def kotlin_json_fetcher_function(node)
+      type = node.type
+
+      return 'asObject' unless is_builtin?(type)
+
+      case node.type
+      when :bool, :boolean
+        'asBoolean'
+      when :int, :integer
+        'asInteger'
+      when :float
+        'asFloat'
+      when :long, :long_integer
+        'asLong'
+      when :string, :email, :phone_number, :url, :date, :binary
+        'asString'
+      end
+    end
+
+    def find_type_node_for(node)
         node
           .root
           .descendants {|descendant|
             descendant.name == node.type && descendant&.is_value_type? rescue false
           }
           .first
+    end
+
+    def kotlin_import(node)
+      return nil if is_builtin? node.type 
+
+      type_node = find_type_node_for(node)
 
       unless type_node.respond_to? :namespace 
         raise <<-EOF.strip_heredoc
