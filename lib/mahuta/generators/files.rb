@@ -25,8 +25,8 @@ module Mahuta::Generators
     P = Pastel.new
     
     def initialize(options = {})
-      @target = options.delete(:target) || raise("Files generator needs to know a target directory")
       super
+      @target = options[:target] || raise("Files generator needs to know a target directory")
     end
     
     attr_reader :target
