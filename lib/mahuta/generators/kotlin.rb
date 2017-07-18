@@ -47,6 +47,8 @@ module Mahuta::Generators
         'org.joda.time.DateTime'
       when :binary
         'ByteArray'
+      when :guid
+        'java.lang.UUID'
       else
         kotlin_class_name(type)
       end
@@ -54,7 +56,7 @@ module Mahuta::Generators
 
     def is_builtin?(type)
       case type
-      when :bool, :boolean, :int, :integer, :float, :long, :long_integer, :string, :email, :phone_number, :url, :date, :binary
+      when :bool, :boolean, :int, :integer, :float, :long, :long_integer, :string, :email, :phone_number, :url, :date, :binary, :guid
         true
       else
         false
@@ -124,7 +126,7 @@ module Mahuta::Generators
         'asFloat'
       when :long, :long_integer
         'asLong'
-      when :string, :email, :phone_number, :url, :date, :binary
+      when :string, :email, :phone_number, :url, :date, :binary, :guid
         'asString'
       end
     end
