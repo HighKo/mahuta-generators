@@ -153,23 +153,51 @@ module Mahuta::Generators
       end
     end
 
-    def find_type_node_for(node)
+    def find_type_node_for(node, scope = nil)
+      if scope.nil?
+        # if not given scope, look it up in all namespaces
         node
           .root
+          .descendants(:namespace).flat_map {|ns|
+            find_type_node_for(node, ns)
+          }
+          .first
+      else
+        type_node = scope
           .descendants {|descendant|
             descendant.name == node.type && descendant&.is_value_type? rescue false
           }
           .first
+
+        if type_node.nil? 
+          # fallback to search in all namespaces
+          # mostly useful for types defined in "common" or "shared" namespaces
+          find_type_node_for(node)
+        else
+          type_node
+        end
+      end
     end
 
-    def kotlin_import(node)
+    def scope(node, type, name = nil) 
+      if name.nil?
+        # reference: search scope upwards from node
+        node.ascendants {|p| p.node_type == type}.first
+      else
+        # foreign: search scope downwards from root
+        node.root.descendants {|c| c.node_type == type && node.name == name}.first
+      end
+    end
+
+    def kotlin_import(node, scope = nil)
       return fully_qualified_extern(node.type) if is_extern? node.type 
       return nil if is_builtin? node.type 
 
-      type_node = find_type_node_for(node)
+      # by default, lookup the import in the node's aggregate
+      scope ||= scope(node, :aggregate)
+      type_node = find_type_node_for(node, scope)
 
       unless type_node.respond_to? :namespace 
-        binding.pry
         raise <<-EOF.strip_heredoc
           Can't infer namespace for #{node.node_type.to_s}:#{node.name.to_s} of type #{type_node.name.to_s}
           while generating #{node.parent.node_type.to_s}:#{node.parent.name.to_s}.
