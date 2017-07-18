@@ -44,11 +44,13 @@ module Mahuta::Generators
       when :url
         'URL'
       when :date
-        'org.joda.time.DateTime'
+        'DateTime'
       when :binary
         'ByteArray'
       when :guid
-        'java.lang.UUID'
+        'UUID'
+      when :structured_data
+        'JsonElement'
       else
         kotlin_class_name(type)
       end
@@ -56,7 +58,7 @@ module Mahuta::Generators
 
     def is_builtin?(type)
       case type
-      when :bool, :boolean, :int, :integer, :float, :long, :long_integer, :string, :email, :phone_number, :url, :date, :binary, :guid
+      when :bool, :boolean, :int, :integer, :float, :long, :long_integer, :string, :email, :phone_number, :url, :date, :binary, :guid, :structured_data
         true
       else
         false
@@ -69,6 +71,26 @@ module Mahuta::Generators
         true
       else
         false
+      end
+    end
+
+    def is_extern?(type)
+      case type
+      when :date, :guid, :structured_data
+        true
+      else 
+        false
+      end
+    end
+
+    def fully_qualified_extern(type)
+      case type
+      when :date
+        'org.joda.time.DateTime'
+      when :guid
+        'java.lang.UUID'
+      when :structured_data
+        'com.google.gson.JsonElement'
       end
     end
 
@@ -141,11 +163,13 @@ module Mahuta::Generators
     end
 
     def kotlin_import(node)
+      return fully_qualified_extern(node.type) if is_extern? node.type 
       return nil if is_builtin? node.type 
 
       type_node = find_type_node_for(node)
 
       unless type_node.respond_to? :namespace 
+        binding.pry
         raise <<-EOF.strip_heredoc
           Can't infer namespace for #{node.node_type.to_s}:#{node.name.to_s} of type #{type_node.name.to_s}
           while generating #{node.parent.node_type.to_s}:#{node.parent.name.to_s}.
