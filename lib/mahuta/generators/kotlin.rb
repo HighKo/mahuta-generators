@@ -88,7 +88,7 @@ module Mahuta::Generators
       when :date
         'org.joda.time.DateTime'
       when :guid
-        'java.lang.UUID'
+        'java.util.UUID'
       when :structured_data
         'com.google.gson.JsonElement'
       end
@@ -98,8 +98,8 @@ module Mahuta::Generators
         type.to_s.camelize(:upper)
     end
 
-    def kotlin_namespace(node, *postfixes)
-      [ *node.namespace, *postfixes ].collect {|nc| nc.to_s.camelize(:lower) }.join('.')
+    def kotlin_namespace(node)
+      node.namespace.collect {|nc| nc.to_s.camelize(:lower) }.join('.')
     end
 
     def kotlin_variable_name(name)
