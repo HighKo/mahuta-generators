@@ -40,6 +40,10 @@ module Mahuta::Generators
       new_child
     end
     
+    def |(visitor)
+      result | visitor
+    end
+    
   end
   
 end
