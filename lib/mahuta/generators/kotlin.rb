@@ -88,7 +88,7 @@ module Mahuta::Generators
       when :date
         'org.joda.time.DateTime'
       when :guid
-        'java.lang.UUID'
+        'java.util.UUID'
       when :structured_data
         'com.google.gson.JsonElement'
       end
