@@ -41,7 +41,7 @@ module Mahuta::Generators
     end
     
     def |(visitor)
-      result | visitor
+      result.deep_freeze! | visitor
     end
     
   end
