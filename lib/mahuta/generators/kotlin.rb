@@ -34,7 +34,7 @@ module Mahuta::Generators
       when :bool, :boolean
         'Boolean'
       when :int, :integer
-        'Integer'
+        'Int'
       when :float
         'Float'
       when :long, :long_integer
@@ -137,13 +137,13 @@ module Mahuta::Generators
     def kotlin_json_fetcher_function(node)
       type = node.type
 
-      return 'asObject' unless is_builtin?(type)
+      return 'asJsonObject' unless is_builtin?(type)
 
       case node.type
       when :bool, :boolean
         'asBoolean'
       when :int, :integer
-        'asInteger'
+        'asInt'
       when :float
         'asFloat'
       when :long, :long_integer
@@ -153,10 +153,42 @@ module Mahuta::Generators
       end
     end
 
+    def scope(node, type) 
+      node.ascendants {|p| p.node_type == type}.first
+    end
+
+    def format_kotlin_import(node)
+      kotlin_namespace(node) + '.' + kotlin_class_name(node.name)
+    end
+
+    def kotlin_import(node)
+      return fully_qualified_extern(node.type) if is_extern? node.type 
+      return nil if is_builtin? node.type 
+
+      type_node = find_type_node_for(node, node.root)
+
+      format_kotlin_import(type_node)
+    end
+
+    def kotlin_property_import(node, scope = nil)
+      return fully_qualified_extern(node.type) if is_extern? node.type 
+      return nil if is_builtin? node.type 
+
+      # by default, lookup the import in the node's aggregate
+      scope ||= scope(node, :aggregate)
+      type_node = find_type_node_for(node, scope)
+
+      format_kotlin_import(type_node)
+    end
+
+    def kotlin_file_name(node) 
+      "#{kotlin_type_name(node[:name])}.kt"
+    end
+
     def find_type_node_for(node, scope = nil)
       if scope.nil?
         # if not given scope, look it up in all namespaces
-        node
+        type_node = node
           .root
           .descendants(:namespace).flat_map {|ns|
             find_type_node_for(node, ns)
@@ -168,49 +200,18 @@ module Mahuta::Generators
             descendant.name == node.type && descendant&.is_value_type? rescue false
           }
           .first
-
-        if type_node.nil? 
-          # fallback to search in all namespaces
-          # mostly useful for types defined in "common" or "shared" namespaces
-          find_type_node_for(node)
-        else
-          type_node
-        end
       end
-    end
-
-    def scope(node, type, name = nil) 
-      if name.nil?
-        # reference: search scope upwards from node
-        node.ascendants {|p| p.node_type == type}.first
-      else
-        # foreign: search scope downwards from root
-        node.root.descendants {|c| c.node_type == type && node.name == name}.first
-      end
-    end
-
-    def kotlin_import(node, scope = nil)
-      return fully_qualified_extern(node.type) if is_extern? node.type 
-      return nil if is_builtin? node.type 
-
-      # by default, lookup the import in the node's aggregate
-      scope ||= scope(node, :aggregate)
-      type_node = find_type_node_for(node, scope)
 
       unless type_node.respond_to? :namespace 
         raise <<-EOF.strip_heredoc
-          Can't infer namespace for #{node.node_type.to_s}:#{node.name.to_s} of type #{type_node.name.to_s}
-          while generating #{node.parent.node_type.to_s}:#{node.parent.name.to_s}.
-          Maybe you used a property name as type?
+          Can't infer namespace for #{node.inspect} in scope #{scope.inspect}
+          while generating #{node.parent.inspect}.
         EOF
       end
 
-      kotlin_namespace(type_node) + '.' + kotlin_class_name(type_node.name)
+      type_node
     end
 
-    def kotlin_file_name(node) 
-      "#{kotlin_type_name(node[:name])}.kt"
-    end
 
   end
 
