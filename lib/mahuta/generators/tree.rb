@@ -18,6 +18,7 @@ module Mahuta::Generators
   module Tree
     
     def initialize(options = {})
+      warn "Mahuta::Generators::Tree is deprecated. Use Mahuta::Common::TreeProducer instead"
       @result = options.delete(:result) || Mahuta::Node.new(nil, nil, :root)
       @stack = [@result]
       super
