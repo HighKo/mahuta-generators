@@ -58,7 +58,7 @@ module Mahuta::Generators
 
     def is_builtin?(type)
       case type
-      when :bool, :boolean, :int, :integer, :float, :long, :long_integer, :string, :email, :phone_number, :url, :date, :binary, :guid, :structured_data
+      when :bool, :boolean, :int, :integer, :float, :long, :long_integer, :string, :email, :phone_number, :url, :date, :binary, :guid 
         true
       else
         false
@@ -67,7 +67,7 @@ module Mahuta::Generators
 
     def is_primitive?(type)
       case type
-      when :bool, :boolean, :int, :integer, :float, :long, :long_integer, :string, :email, :phone_number 
+      when :bool, :boolean, :int, :integer, :float, :long, :long_integer, :string, :email, :phone_number, :structured_data
         true
       else
         false
@@ -76,7 +76,7 @@ module Mahuta::Generators
 
     def is_extern?(type)
       case type
-      when :date, :guid, :structured_data
+      when :date, :guid, :structured_data, :url
         true
       else 
         false
@@ -91,6 +91,8 @@ module Mahuta::Generators
         'java.util.UUID'
       when :structured_data
         'com.google.gson.JsonElement'
+      when :url
+        'java.net.URL'
       end
     end
 
@@ -111,8 +113,11 @@ module Mahuta::Generators
     end
 
     def kotlin_serializer_function(node) 
-      if is_builtin? node.type 
-        'toString' 
+      case node.type
+      when :guid, :date, :url
+        'toString'
+      when :structured_data
+        nil
       else 
         'toJson'
       end
@@ -127,8 +132,15 @@ module Mahuta::Generators
     end
 
     def kotlin_deserializer_function(node) 
-      if is_builtin? node.type 
-        'fromString' 
+      case node.type
+      when :binary
+        'byteArrayFromJson'
+      when :guid
+        'UUID.fromString'
+      when :date
+        'DateTime.parse'
+      when :url
+        'URL'
       else 
         'fromJson' 
       end
