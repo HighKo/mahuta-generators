@@ -148,8 +148,19 @@ module Mahuta::Generators
 
     def kotlin_json_fetcher_function(node)
       type = node.type
-
-      return 'asJsonObject' unless is_builtin?(type)
+      
+      # Fixes enum issue. 
+      # TODO clean up type search
+      unless is_builtin?(type)
+        begin
+          target_type = find_type_node_for(node, node.root)
+          if target_type.node_type == :enumeration
+            return 'asJsonPrimitive'
+          end
+        rescue
+        end
+        return 'asJsonObject' 
+      end
 
       case node.type
       when :bool, :boolean
