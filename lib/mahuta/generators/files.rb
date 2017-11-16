@@ -25,26 +25,51 @@ module Mahuta::Generators
     P = Pastel.new
     
     def initialize(options = {})
+      @target = Pathname(options.delete(:target) || raise("Files generator needs to know a target directory"))
+      @diff = options.include?(:diff) ? options.delete(:diff) : true
+      @current_destination = []
       super
-      @target = options[:target] || raise("Files generator needs to know a target directory")
     end
     
-    attr_reader :target
+    attr_reader :target, :diff
     
-    def update_file(name, content)
-      print "Generating file #{name.relative_path_from(@target)}... "
-      if name.exist?
-        diff = Diffy::Diff.new(name.read, content)
+    Destination = Struct.new :path, :full_path do
+      def content
+        @content ||= StringIO.new
+      end
+    end
+    
+    def begin_file(*name)
+      @current_destination << Destination.new(Pathname(File.join(name)), target + File.join(name))
+    end
+    
+    def newline
+      $/
+    end
+    
+    alias_method :nl, :newline
+    
+    def append(*s)
+      @current_destination.last.content.print(*s)
+    end
+    
+    def finish_file
+      destination = @current_destination.pop
+      print "Generating #{destination.path} ... "
+      full_path = destination.full_path
+      content = destination.content.string
+      if diff and full_path.exist?
+        diff = Diffy::Diff.new(full_path.read, content)
         if diff.to_s.empty?
-          puts P.bright_yellow("skip")
+          puts P.cyan("skip")
         else
           puts P.bold.yellow("update")
         end
       else
         puts P.bold.green("create")
       end
-      name.parent.mkpath
-      name.write(content)
+      full_path.parent.mkpath
+      full_path.write(content)
     end
     
   end
