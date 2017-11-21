@@ -50,7 +50,9 @@ module Mahuta::Generators
     alias_method :nl, :newline
     
     def append(*s)
-      @current_destination.last.content.print(*s)
+      unless @current_destination.empty?
+        @current_destination.last.content.print(*s)
+      end
     end
     
     def finish_file
